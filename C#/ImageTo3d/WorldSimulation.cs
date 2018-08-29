@@ -25,7 +25,9 @@ namespace ImageTo3d
 
 		public WorldSimulation(CameraInfo initCamInfo) 
 		{
-
+			cameraInfo = initCamInfo;
+			PointCloud = new PointCloud();
+			ProjectionCloud = new ProjectionCloud(1000);
 		}
 
 		public void AddImage(Color[][] data, Vector3 camPosition, Vector3 camRotation) 

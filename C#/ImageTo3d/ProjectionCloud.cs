@@ -40,6 +40,7 @@ namespace ImageTo3d.Util
 		public void Add(Projection p)
 		{
 			Projections[Index] = p;
+			Index++;
 
 			if (Index == Projections.Length)
 			{
@@ -53,7 +54,18 @@ namespace ImageTo3d.Util
 		 */
 		public Projection[] GetProjections()
 		{
-			return Projections;
+			if (Projections[Index] == null)
+			{
+				Projection[] arr = new Projection[Index];
+				for (int i = 0; i < arr.Length; i++)
+				{
+					arr[i] = Projections[i];
+				}
+				return arr;
+			} else
+			{
+				return Projections;
+			}
 		}
 	}
 }
