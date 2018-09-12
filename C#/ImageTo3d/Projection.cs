@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using System.Text;
 
@@ -22,8 +23,21 @@ namespace ImageTo3d.Util
 	 * most likely to lie.
 	 */
 	class Projection {
+		/* Stores the slope of the line, such that the pixel shown
+		 * on the camera must have originated from some point on
+		 * the line.
+		 */ 
 		Vector3 slope;
+
+		/* Stores the starting point of the line
+		 * This point relates to the relative position of the camera
+		 * when this projection was found as compared to when the simulation
+		 * began.
+		 */
 		Vector3 origin;
+
+		/* Stores the color of the projection in integer form using bitshifting
+		 */
 		int color;
 
 		public Projection(Vector3 initSlope, Vector3 initOrigin, int initColor)
@@ -31,6 +45,16 @@ namespace ImageTo3d.Util
 			slope = initSlope;
 			origin = initOrigin;
 			color = initColor;
+		}
+
+		/*
+		 * Method returns the color of the projection in the form
+		 * of Drawing's color.
+		 * Uses bitshifting to unpack color from int
+		 */ 
+		public Color GetColor()
+		{
+			return new Color();
 		}
 
 		/*
