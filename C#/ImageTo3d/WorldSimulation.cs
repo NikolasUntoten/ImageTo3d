@@ -30,6 +30,9 @@ namespace ImageTo3d
 			ProjectionCloud = new ProjectionCloud(1000);
 		}
 
+		/* Given a certain image, and information about the camera,
+		 * adds a list of projections of pixels to the projectioncloud.
+		 */ 
 		public void AddImage(Color[][] data, Vector3 camPosition, Vector3 camRotation) 
 		{
 			int width = data.GetLength(0);
@@ -40,6 +43,11 @@ namespace ImageTo3d
 					ProjectionCloud.Add(p);
 				}
 			}
+		}
+
+		public void UpdateSimulation()
+		{
+
 		}
 
 		private Projection FindProjection(Color color, int x, int y,
