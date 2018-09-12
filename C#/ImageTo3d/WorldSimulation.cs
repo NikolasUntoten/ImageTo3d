@@ -47,7 +47,21 @@ namespace ImageTo3d
 
 		public void UpdateSimulation()
 		{
-
+			/* Basically here I plan to go through and check all projections recently added for
+			 * collisions with other projections, then update the confidences of the
+			 * point cloud with the new information.
+			 * 
+			 * When checknig if a projection collides, I should insure that there is a significant
+			 * difference in their origin (since this is a multivariable equation we're solving,
+			 * the close the origin is, the more likely it is to give bad results. We need diverse
+			 * data for accuraccy).
+			 * 
+			 * So for finding collisions, I am filtering by color first, then origin distance, then
+			 * a minimum threshold for collision. After all of these are met, the lines "collide",
+			 * and the point they create is added to the point cloud (although there should be a mechanism
+			 * for defining if a point is near enough to another to be considered the same point, as this
+			 * will be vital for an efficient use of data for confidences)
+			 */ 
 		}
 
 		private Projection FindProjection(Color color, int x, int y,

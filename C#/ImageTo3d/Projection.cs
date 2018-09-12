@@ -83,6 +83,23 @@ namespace ImageTo3d.Util
 			return c1;
 		}
 
+		/* Finds the collision, using a derived formula starting from where p1 = p2
+		 * so [A + Bt, E + Ft, I + Jt] = [C + Ds, G + Hs, K + Ls]
+		 * by setting the first row equal, we find
+		 * t = (c - a + Ds) / B
+		 * substituting t for the formula above, we see that E + Ft = G + Hs becomes
+		 * G + Hs = E + F((C - A + Ds) / B)
+		 * which simplifies to
+		 * s = (G - E - F(C - A) / B) / (F * D / B - H)
+		 * which I have translated into code below, then plugged s into p2.
+		 */
+		public static Vector3 FindCollision(Projection p1, Projection p2)
+		{
+			float s = (p2.origin.Y - p1.origin.Y - (p1.slope.Y * (p2.origin.X - p1.origin.X) / p1.slope.X))
+				/ ((p1.slope.Y * p2.slope.X / p1.slope.X) - p2.slope.Y);
+			return p2.origin + p2.slope * s;
+		}
+
 		/*
 		 * Method returns the color of the projection in the form
 		 * of Drawing's color.
