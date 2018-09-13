@@ -22,7 +22,7 @@ namespace ImageTo3d.Util
 	 * similarly colored lines, to determine where the original 3D point is
 	 * most likely to lie.
 	 */
-	class Projection {
+	public class Projection {
 		/* Stores the slope of the line, such that the pixel shown
 		 * on the camera must have originated from some point on
 		 * the line.
@@ -40,17 +40,34 @@ namespace ImageTo3d.Util
 		 */
 		int color;
 
-		public Projection(Vector3 initSlope, Vector3 initOrigin, int initColor)
+		public Projection(Vector3 initOrigin, Vector3 initSlope,  int initColor)
 		{
 			slope = initSlope;
 			origin = initOrigin;
 			color = initColor;
 		}
 
+		public Projection(float originX, float originY, float originZ,
+				 float slopeX, float slopeY, float slopeZ, int initColor)
+		{
+			slope = new Vector3(slopeX, slopeY, slopeZ);
+			origin = new Vector3(originX, originY, originZ);
+			color = initColor;
+		}
+
+		/* Determines if two lines intersect.
+		 */ 
+		public static Boolean DoesCollide(Projection p1, Projection p2)
+		{
+			Vector3 cross = Vector3.Cross(p1.slope, p2.slope);
+			float val = Vector3.Dot(cross, p1.origin - p2.origin);
+			return Math.Abs(val) < 0.001f;
+		}
+
 		/* Finds if the smalles distance between two projections is
 		 * less than the given threshold.
-		 */ 
-		public static Boolean DoesCollide(Projection p1, Projection p2, double threshold)
+		 */
+		public static Boolean DoesNearCollide(Projection p1, Projection p2, double threshold)
 		{
 			return MinimumDistance(p1, p2) <= threshold;
 		}
@@ -61,7 +78,7 @@ namespace ImageTo3d.Util
 		 * The method itself simplifies this formula into pure algebra, and
 		 * as such is mildly unreadable.
 		 */
-		private static double MinimumDistance(Projection p1, Projection p2)
+		public static double MinimumDistance(Projection p1, Projection p2)
 		{
 			Vector3 cross = Vector3.Cross(p1.slope, p2.slope);
 			double val = Vector3.Dot(p2.origin - p1.origin, cross) / cross.Length();
@@ -91,7 +108,7 @@ namespace ImageTo3d.Util
 		 * G + Hs = E + F((C - A + Ds) / B)
 		 * which simplifies to
 		 * s = (G - E - F(C - A) / B) / (F * D / B - H)
-		 * which I have translated into code below, then plugged s into p2.
+		 * which is translated into code below, then plugged s into p2.
 		 */
 		public static Vector3 FindCollision(Projection p1, Projection p2)
 		{
