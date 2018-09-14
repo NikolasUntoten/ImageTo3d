@@ -3,11 +3,20 @@ using Xunit;
 using ImageTo3d.Util;
 using System.Diagnostics;
 using System.Numerics;
+using Xunit.Abstractions;
 
 namespace ImageTo3d.Tests
 {
     public class ProjectionTests
     {
+
+		private readonly ITestOutputHelper output;
+
+		public ProjectionTests(ITestOutputHelper output)
+		{
+			this.output = output;
+		}
+
 		[Fact]
 		public void Projections_AreCreatedProperly()
 		{
@@ -24,12 +33,18 @@ namespace ImageTo3d.Tests
 		[Fact]
 		public void MinimumDistance_IsCorrect()
 		{
-			Projection p1 = new Projection(0, 0, 0, 1, 0, 0, 0);
-			Projection p2 = new Projection(2, 10, 0, -1, 0.1f, 0, 0);
+			Projection p1 = new Projection(0, 0, 0, 1, 1, 0, 0);
+			Projection p2 = new Projection(2, 2, 1, -1, 1, 0, 0);
+
+			Vector3[] arr = Projection.FindNearestPoints(p1, p2);
+			output.WriteLine(arr[0].ToString());
+			output.WriteLine(arr[1].ToString());
 
 			double minimum = Projection.MinimumDistance(p1, p2);
+			output.WriteLine(minimum + "");
+			Assert.NotEqual(0, minimum, 15);
 
-			Assert.NotEqual(0, minimum);
+			
 		}
 
 		[Fact]
@@ -52,9 +67,9 @@ namespace ImageTo3d.Tests
 			Projection p1 = new Projection(0, 1, 0, 1, 0, 0, 0);
 			Projection p2 = new Projection(0, 2, 0, 0, 0, 1, 0);
 
-			Vector3 actual = Projection.FindNearestPoint(p1, p2);
+			Vector3[] actuals = Projection.FindNearestPoints(p1, p2);
 			Vector3 expected = new Vector3(0, 1, 0);
-			Assert.Equal(expected, actual);
+			Assert.Equal(expected, actuals[0]);
 		}
 	}
 }

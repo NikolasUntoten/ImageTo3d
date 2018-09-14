@@ -75,29 +75,65 @@ namespace ImageTo3d.Util
 		/* Finds the smallest distance between two projections
 		 * Uses the formula |(a-c) * (b x d) / |b x d|)| where a b c and d satisfy
 		 * p1 = a + bt and p2 = c + ds where t and s are scalars.
-		 * The method itself simplifies this formula into pure algebra, and
-		 * as such is mildly unreadable.
 		 */
 		public static double MinimumDistance(Projection p1, Projection p2)
 		{
-			Vector3 cross = Vector3.Cross(p1.slope, p2.slope);
+			Vector3[] points = FindNearestPoints(p1, p2);
+			return Vector3.Distance(points[0], points[1]);
+			/*Vector3 cross = Vector3.Cross(p1.slope, p2.slope);
 			double val = Vector3.Dot(p2.origin - p1.origin, cross) / cross.Length();
-			return Math.Abs(val);
+			return Math.Abs(val);*/ // This method should be faster, but doesn't currently work
 		}
 
-		/* Finds the nearest point between two projections.
-		 * uses formula found at https://en.wikipedia.org/wiki/Skew_lines#Nearest_Points
+		/* Finds the two nearest points of the projections, and
+		 * returns them in an array that has exactly 2 elements
 		 */
-		public static Vector3 FindNearestPoint(Projection p1, Projection p2)
+		public static Vector3[] FindNearestPoints(Projection p1, Projection p2)
 		{
+			Vector3[] points = new Vector3[2];
+			points[0] = FindNearestPoint(p1, p2);
+			points[1] = FindNearestPoint(p2, p1);
+			return points;
+		}
+
+		/* Helper method for FindNearestPoints, to condense 
+		 * the equation for finding the actual point.
+		 * TReturns the nearest point on line p1 to line p2.
+		 * Uses formula found at https://en.wikipedia.org/wiki/Skew_lines#Nearest_Points
+		 */
+		private static Vector3 FindNearestPoint(Projection p1, Projection p2)
+		{
+			if (AreParrallel(p1.slope, p2.slope))
+				throw new Exception("Projections are parallel!");
+			if (DoesCollide(p1, p2)) throw new Exception("Projections collide!");
+
 			Vector3 n1 = Vector3.Cross(p1.slope, p2.slope);
 			Vector3 n2 = Vector3.Cross(p2.slope, n1);
-			Vector3 c1 = p1.origin + 
-				(Vector3.Dot(p2.origin - p1.origin, n2) 
-				/ (Vector3.Dot(p1.slope, n2))) 
+			return p1.origin +
+				(Vector3.Dot(p2.origin - p1.origin, n2)
+				/ (Vector3.Dot(p1.slope, n2)))
 				* p1.slope;
-			//TODO get the nearest point on second line, and average the two?
-			return c1;
+		}
+
+		/* This was meant to be a short helper method, but turned
+		 * into a large method due to the need to account for any 0
+		 * in a parallel vector.
+		 * Finds a non-zero scalar if there is one, then checks to see
+		 * if the scalar works on each element.
+		 */ 
+		private static Boolean AreParrallel(Vector3 v1, Vector3 v2)
+		{
+			float scalar = 0;
+
+			if (v1.X != 0 && v2.X != 0) scalar = v1.X / v2.X;
+			if (v1.Y != 0 && v2.Y != 0) scalar = v1.Y / v2.Y;
+			if (v1.Z != 0 && v2.Z != 0) scalar = v1.Z / v2.Z;
+
+			if (scalar == 0) return false;
+			if (v1.X * scalar != v2.X) return false;
+			if (v1.Y * scalar != v2.Y) return false;
+			if (v1.Z * scalar != v2.Z) return false;
+			return true;
 		}
 
 		/* Finds the collision, using a derived formula starting from where p1 = p2
