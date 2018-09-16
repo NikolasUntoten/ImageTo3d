@@ -59,6 +59,7 @@ namespace ImageTo3d.Util
 		 */ 
 		public static Boolean DoesCollide(Projection p1, Projection p2)
 		{
+			if (AreParrallel(p1.slope, p2.slope)) return false;
 			Vector3 cross = Vector3.Cross(p1.slope, p2.slope);
 			float val = Vector3.Dot(cross, p1.origin - p2.origin);
 			return Math.Abs(val) < 0.001f;
@@ -121,7 +122,7 @@ namespace ImageTo3d.Util
 		 * Finds a non-zero scalar if there is one, then checks to see
 		 * if the scalar works on each element.
 		 */ 
-		private static Boolean AreParrallel(Vector3 v1, Vector3 v2)
+		public static Boolean AreParrallel(Vector3 v1, Vector3 v2)
 		{
 			float scalar = 0;
 
@@ -130,9 +131,9 @@ namespace ImageTo3d.Util
 			if (v1.Z != 0 && v2.Z != 0) scalar = v1.Z / v2.Z;
 
 			if (scalar == 0) return false;
-			if (v1.X * scalar != v2.X) return false;
-			if (v1.Y * scalar != v2.Y) return false;
-			if (v1.Z * scalar != v2.Z) return false;
+			if (v2.X * scalar != v1.X) return false;
+			if (v2.Y * scalar != v1.Y) return false;
+			if (v2.Z * scalar != v1.Z) return false;
 			return true;
 		}
 
